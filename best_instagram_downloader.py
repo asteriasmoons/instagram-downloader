@@ -19,7 +19,7 @@ def privacy_message_handler(message):
 @bot.message_handler(commands = ['lystaria_msg'])
 def lystaria_message_handler(message):
     bot.send_message(message.chat.id, lystaria_msg, parse_mode="HTML", disable_web_page_preview=True)
-   log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nlystaria command")  
+    log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nlystaria command")  
 
 @bot.message_handler(regexp = spotify_link_reg)
 def spotify_link_handler(message):
