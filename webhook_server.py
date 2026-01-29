@@ -52,12 +52,6 @@ def setup_webhook():
         bot.set_webhook(url=WEBHOOK_URL)
 
     print("Webhook set to:", PUBLIC_URL)
-
-if __name__ == "__main__":
-    # Render provides PORT
-    port = int(os.getenv("PORT", "10000"))
-    setup_webhook()
-    app.run(host="0.0.0.0", port=port)
     
     # Auto-set webhook when running under a WSGI server (safe with 1 worker)
 if PUBLIC_URL:
@@ -65,3 +59,9 @@ if PUBLIC_URL:
         setup_webhook()
     except Exception as e:
         print("Webhook setup error:", repr(e))
+
+if __name__ == "__main__":
+    # Render provides PORT
+    port = int(os.getenv("PORT", "10000"))
+    setup_webhook()
+    app.run(host="0.0.0.0", port=port)
