@@ -3,18 +3,23 @@ from riad_azz import get_instagram_media_links
 
 @bot.message_handler(commands=['start'])
 def start_command_handler(message):
-    bot.send_message(message.chat.id, start_msg, parse_mode="Markdown", disable_web_page_preview=True)
+    bot.send_message(message.chat.id, start_msg, parse_mode="HTML", disable_web_page_preview=True)
     log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nstart command")
 
 @bot.message_handler(commands=['help'])
 def help_command_handler(message):
-    bot.send_message(message.chat.id, help_msg, parse_mode="Markdown", disable_web_page_preview=True)
+    bot.send_message(message.chat.id, help_msg, parse_mode="HTML", disable_web_page_preview=True)
     log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nhelp command")
 
 @bot.message_handler(commands = ['privacy'])
 def privacy_message_handler(message):
-    bot.send_message(message.chat.id, privacy_msg, parse_mode="Markdown", disable_web_page_preview=True)
+    bot.send_message(message.chat.id, privacy_msg, parse_mode="HTML", disable_web_page_preview=True)
     log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nprivacy command")
+    
+@bot.message_handler(commands = ['lystaria_msg'])
+def lystaria_message_handler(message):
+    bot.send_message(message.chat.id, lystaria_msg, parse_mode="HTML", disable_web_page_preview=True)
+   log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\nlystaria command")  
 
 @bot.message_handler(regexp = spotify_link_reg)
 def spotify_link_handler(message):
@@ -80,7 +85,7 @@ def post_or_reel_link_handler(message):
             for chunk in chunk_list(media_list, 10):
                 print(chunk)
                 bot.send_media_group(message.chat.id, chunk)
-        bot.send_message(message.chat.id, end_msg, parse_mode="Markdown", disable_web_page_preview=True)
+        bot.send_message(message.chat.id, end_msg, parse_mode="HTML", disable_web_page_preview=True)
         try_to_delete_message(message.chat.id, guide_msg_1.message_id)
         return
     except Exception as e:
@@ -89,13 +94,13 @@ def post_or_reel_link_handler(message):
         except:
             pass
         log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\n🛑 error in main body: {str(e)}")
-        bot.send_message(message.chat.id, fail_msg, parse_mode="Markdown", disable_web_page_preview=True)
+        bot.send_message(message.chat.id, fail_msg, parse_mode="HTML", disable_web_page_preview=True)
         # import traceback
         # traceback.print_exc() # print error traceback
 
 @bot.message_handler(func=lambda message: True)
 def wrong_pattern_handler(message):
     log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\n❌wrong pattern: {message.text}")
-    bot.send_message(message.chat.id, wrong_pattern_msg, parse_mode="Markdown", disable_web_page_preview=True)
+    bot.send_message(message.chat.id, wrong_pattern_msg, parse_mode="HTML", disable_web_page_preview=True)
 
 

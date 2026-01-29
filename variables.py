@@ -27,7 +27,7 @@ log_channel_id_raw = (os.getenv("INSTAGRAM_DOWNLOADER_LOG_CHANNEL_ID") or "").st
 log_channel_id = int(log_channel_id_raw) if log_channel_id_raw.lstrip("-").isdigit() else None
 
 # initialize bot
-bot = telebot.TeleBot(bot_token)
+bot = telebot.TeleBot(bot_token, parse_mode="HTML")
 
 # settings
 bot_username = "@quick_instagram_bot"
@@ -43,8 +43,7 @@ insta_post_or_reel_reg = r'(?:https?://www\.)?instagram\.com\S*?/(p|reel)/([a-zA
 spotify_link_reg = r'(?:https?://)?open\.spotify\.com/(track|album|playlist|artist)/[a-zA-Z0-9]+'
 
 # messages
-start_msg = '''Hi😃👋
-Send an instagram link to download.
+start_msg = '''Send an instagram link to download.
 
 It can be a post link like this:
 https://www.instagram.com/p/DFx\_jLuACs3
@@ -52,27 +51,69 @@ https://www.instagram.com/p/DFx\_jLuACs3
 Or it can be a reel link like this:
 https://www.instagram.com/reel/C59DWpvOpgF'''
 
-help_msg = '''This bot is open source and you are welcome to contribute and improve it.
-https://github.com/arashnm80/best-instagram-downloader
+help_msg = '''<b>Instagram Downloader -- Help</b>
 
-You can give me energy by giving a star in github'''
+This is a link-based Instagram downloader. Send an Instagram post link and the bot will fetch the media and return it here as downloadable files.
 
-privacy_msg = '''This bot doesn't gather any info from the users.
+<b>What it’s for</b>
+- Saving images from Instagram posts without screenshots
+- Grabbing carousel photos in a clean, original-quality format (when available)
 
-Also it's whole open source and available here:
-https://github.com/arashnm80/best-instagram-downloader'''
+<b>How it works</b>
+1. Copy the link to an Instagram post
+2. Paste the link into chat with this bot
+3. The bot downloads the media and sends it back as files
 
-end_msg = '''If you liked the bot you can support me by giving a star [here](https://github.com/arashnm80/best-instagram-downloader)⭐ (it's free)
+<b>Supported right now</b>
+- Public Instagram posts
+- Photo posts and carousel images
 
-You can also check out my *Music Downloader* too: @SpotSeekBot'''
+<b>Private links</b>
+Private links may work only if the bot’s current session has access to view the post. If it cannot access the content, the request will fail.
 
-fail_msg = '''Sorry, my process wasn't successful.
-But you can try again another time or with another link.'''
+<b>Limits and expectations</b>
+- Some posts may fail due to Instagram restrictions or rate limits
+- If it fails, try again later or send a different link
+- This bot does not claim video support in its current version
 
-wrong_pattern_msg = '''wrong pattern.
+<b>Support</b>
+If you run into issues or have questions, contact @asteriasmoons
+
+You can share the bot to show the love!'''
+
+privacy_msg = '''<b>Privacy</b>
+
+This bot does not collect, store, or share any personal user data.
+
+Links you send are used only to fetch the requested media and are not saved after processing.'''
+
+end_msg = '''If you like the bot you can support me by giving a star [here](https://github.com/asteriasmoons/instagram-downloader)☆ (it's free)
+
+You can also check out my other bot too: @lystaria_bot for more info use /lystaria'''
+
+fail_msg = '''Sorry, my process wasn't successful. But you can try again another time or with another link.'''
+
+wrong_pattern_msg = '''Wrong pattern.
 You should send an instagram post or reel link.'''
 
-reel_msg = '''reel links are not supported at the moment.
-You can send post links instead.
+reel_msg = '''Reel links are not supported at the moment. You can send post links instead.'''
 
-Motivate me to add support of reels and stories by subscribing to [my youtube](https://www.youtube.com/@Arashnm80)'''
+lystaria_msg = '''<b>Lystaria Bot</b>
+Hello! Thank you for being interested in my first project for Telegram. I built this bot for an entirely different use case and in an entirely different language.. so what is it?
+
+Lystaria @lystaria_bot is a multi-management bot for many different things but overall its a productivity bot.
+- Reminders (once/recurring)
+- Events (once/recurring)
+- Share/Join Events
+- User Settings
+- Calendar View (list style)
+- Journal (with tag filter page)
+- Prompts for your journal
+- Reading Streaks Counter
+- Add books with tbr, reading, etc.
+- Generate Book Summaries
+- Mini App or Command Driven!
+
+I created this bot for my own personal use. I adore Telegram and its interface and design and the way bots function inside of it. Much like discord does but better and I knew immediately what my use case would be.. 
+
+I NEEDED this bot for myself but I also wanted to see others benefit from it as well. I paid $15 to advertise it and got 35 subscribers on day two and a 4.2/5 star rating on day three with roughly 50 votes. It has been such a wonderful experience and I am always looking to refine the features for it. Try it out if you like, just click the bots username above!'''
