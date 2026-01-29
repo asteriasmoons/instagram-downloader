@@ -31,7 +31,7 @@ def telegram_webhook():
 
     from telebot.types import Update
     try:
-        update_obj = Update.de_json(update, bot)
+        update_obj = Update.de_json(update)
         bot.process_new_updates([update_obj])
     except Exception as e:
         print("Webhook processing error:", repr(e))
