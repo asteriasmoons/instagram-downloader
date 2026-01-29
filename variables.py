@@ -31,7 +31,7 @@ caption_trail = "\n\n\n" + bot_username
 session_file_name = "session" # any name change should apply to .gitignore too
 
 # warp socks proxy
-warp_proxies = os.environ["WARP_PROXIES"]
+warp_proxies = os.environ.get("WARP_PROXIES", "")
 warp_proxies = json.loads(warp_proxies)
 
 # regex
