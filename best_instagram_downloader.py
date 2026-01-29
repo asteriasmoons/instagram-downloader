@@ -98,5 +98,5 @@ def wrong_pattern_handler(message):
     log(f"{bot_username} log:\n\nuser: {message.chat.id}\n\n❌wrong pattern: {message.text}")
     bot.send_message(message.chat.id, wrong_pattern_msg, parse_mode="Markdown", disable_web_page_preview=True)
 
-bot.infinity_polling()
+bot.infinity_polling(skip_pending=True, timeout=60, long_polling_timeout=60)
 
