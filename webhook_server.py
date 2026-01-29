@@ -58,7 +58,7 @@ def setup_webhook():
     else:
         bot.set_webhook(url=WEBHOOK_URL)
 
-    print("Webhook set to:", WEBHOOK_URL)
+    print("Webhook set to:", PUBLIC_URL)
 
 if __name__ == "__main__":
     # Render provides PORT
