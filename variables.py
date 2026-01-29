@@ -26,7 +26,7 @@ log_channel_id = os.getenv('INSTAGRAM_DOWNLOADER_LOG_CHANNEL_ID') # set to False
 bot = telebot.TeleBot(bot_token)
 
 # settings
-bot_username = "@Best_Instagram_Downloader_Bot"
+bot_username = "@quick_instagram_bot"
 caption_trail = "\n\n\n" + bot_username
 session_file_name = "session" # any name change should apply to .gitignore too
 
