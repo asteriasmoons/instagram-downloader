@@ -26,10 +26,6 @@ def health():
 @app.post(WEBHOOK_PATH)
 def telegram_webhook():
     # Optional: a simple shared secret header check
-    if WEBHOOK_SECRET:
-        incoming = request.headers.get("X-Webhook-Secret", "")
-        if incoming != WEBHOOK_SECRET:
-            abort(403)
 
     update = request.get_json(silent=True)
     if not update:
