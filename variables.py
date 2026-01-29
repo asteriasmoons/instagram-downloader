@@ -16,11 +16,15 @@ import urllib.parse
 # and read from '.env' in current folder instead of '/etc/environment'
 # more guide:
 # https://dev.to/jakewitcher/using-env-files-for-environment-variables-in-python-applications-55a1
-load_dotenv()
+load_dotenv(override=False)
 
 # env variables
-bot_token = os.getenv('BEST_INSTAGRAM_DOWNLOADER_BOT_API')
-log_channel_id = os.getenv('INSTAGRAM_DOWNLOADER_LOG_CHANNEL_ID') # set to False if not needed
+bot_token = (os.getenv("BEST_INSTAGRAM_DOWNLOADER_BOT_API") or "").strip()
+if not bot_token:
+    raise RuntimeError("Missing BEST_INSTAGRAM_DOWNLOADER_BOT_API env var")
+
+log_channel_id_raw = (os.getenv("INSTAGRAM_DOWNLOADER_LOG_CHANNEL_ID") or "").strip()
+log_channel_id = int(log_channel_id_raw) if log_channel_id_raw.lstrip("-").isdigit() else None
 
 # initialize bot
 bot = telebot.TeleBot(bot_token)
