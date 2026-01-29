@@ -25,21 +25,17 @@ def health():
 
 @app.post(WEBHOOK_PATH)
 def telegram_webhook():
-    # Optional: a simple shared secret header check
-
     update = request.get_json(silent=True)
     if not update:
         return "no update", 200
- print("Webhook hit:", update.get("update_id"))
 
-    # telebot expects an Update object; easiest is to feed raw JSON through types.Update
     from telebot.types import Update
     try:
         update_obj = Update.de_json(update, bot)
         bot.process_new_updates([update_obj])
     except Exception as e:
-        # Don't crash the web server; just log
         print("Webhook processing error:", repr(e))
+
     return "ok", 200
 
 def setup_webhook():
