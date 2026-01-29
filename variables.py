@@ -31,8 +31,8 @@ caption_trail = "\n\n\n" + bot_username
 session_file_name = "session" # any name change should apply to .gitignore too
 
 # warp socks proxy
-warp_proxies = os.environ.get("WARP_PROXIES", "")
-warp_proxies = json.loads(warp_proxies)
+warp_proxies_raw = os.environ.get("WARP_PROXIES", "[]").strip()
+warp_proxies = json.loads(warp_proxies_raw or "[]")
 
 # regex
 insta_post_or_reel_reg = r'(?:https?://www\.)?instagram\.com\S*?/(p|reel)/([a-zA-Z0-9_-]{11})/?'
