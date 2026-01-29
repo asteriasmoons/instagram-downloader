@@ -43,22 +43,42 @@ def setup_webhook():
         print("PUBLIC_URL is not set; cannot set webhook automatically.")
         return
 
-    # Remove any existing webhook and set the new one
-    bot.remove_webhook()
-    # If you use WEBHOOK_SECRET, we’ll send it from Telegram via secret_token (supported by Telegram)
-    if WEBHOOK_SECRET:
-        bot.set_webhook(url=WEBHOOK_URL, secret_token=WEBHOOK_SECRET)
-    else:
-        bot.set_webhook(url=WEBHOOK_URL)
-
-    print("Webhook set to:", PUBLIC_URL)
-    
-    # Auto-set webhook when running under a WSGI server (safe with 1 worker)
-if PUBLIC_URL:
     try:
-        setup_webhook()
+        info = bot.get_webhook_info()
+        if info and getattr(info, "url", "") == WEBHOOK_URL:
+            print("Webhook already set correctly:", WEBHOOK_URL)
+            return
+
+        bot.remove_webhook()
+
+        if WEBHOOK_SECRET:
+            bot.set_webhook(url=WEBHOOK_URL, secret_token=WEBHOOK_SECRET)
+        else:
+            bot.set_webhook(url=WEBHOOK_URL)
+
+        print("Webhook set to:", WEBHOOK_URL)
+
     except Exception as e:
-        print("Webhook setup error:", repr(e))
+        print("Webhook setup failed (will continue running):", repr(e)) 
+
+def setup_webhook():
+    if not PUBLIC_URL:
+        print("PUBLIC_URL is not set; cannot set webhook automatically.")
+        return
+
+    try:
+        bot.remove_webhook()
+
+        if WEBHOOK_SECRET:
+            bot.set_webhook(url=WEBHOOK_URL, secret_token=WEBHOOK_SECRET)
+        else:
+            bot.set_webhook(url=WEBHOOK_URL)
+
+        print("Webhook set to:", WEBHOOK_URL)
+
+    except Exception as e:
+        # IMPORTANT: don't crash the server if Telegram rate-limits
+        print("Webhook setup failed (will continue running):", repr(e))
 
 if __name__ == "__main__":
     # Render provides PORT
