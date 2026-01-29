@@ -87,7 +87,7 @@ This bot does not collect, store, or share any personal user data.
 
 Links you send are used only to fetch the requested media and are not saved after processing.'''
 
-end_msg = '''If you like the bot you can support me by giving a star [here](https://github.com/asteriasmoons/instagram-downloader)☆ (it's free)
+end_msg = '''If you like the bot you can support me by giving a star <a href="https://github.com/asteriasmoons/instagram-downloader">here</a> ☆ (it's free)
 
 You can also check out my other bot too: @lystaria_bot for more info use /lystaria'''
 
