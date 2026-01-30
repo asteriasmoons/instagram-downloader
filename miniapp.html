@@ -1,82 +1,394 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Instagram Downloader</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
-    body { font-family: system-ui, -apple-system, sans-serif; padding: 16px; }
-    .card { border: 1px solid rgba(0,0,0,0.12); border-radius: 14px; padding: 16px; }
-    h2 { margin: 0 0 8px 0; }
-    .muted { opacity: 0.75; font-size: 14px; margin-bottom: 12px; }
-    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.2); font-size: 16px; }
-    button { width: 100%; padding: 12px; border-radius: 12px; border: 0; font-size: 16px; margin-top: 12px; }
-    .status { margin-top: 12px; white-space: pre-wrap; font-size: 14px; opacity: 0.9; }
+    :root{
+      --bg0: #070814;
+      --bg1: #0b1030;
+      --glass: rgba(255,255,255,.06);
+      --glass2: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.18);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.68);
+      --muted2: rgba(255,255,255,.52);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --radius2: 14px;
+      --pad: 16px;
+
+      --gradA: #8b5cf6;
+      --gradB: #22d3ee;
+      --gradC: #fb7185;
+      --gradD: #fbbf24;
+
+      --btnText: rgba(10,10,18,.92);
+      --danger: #fb7185;
+      --ok: #22c55e;
+      --warn: #fbbf24;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(139,92,246,.35), transparent 55%),
+        radial-gradient(900px 600px at 110% 20%, rgba(34,211,238,.22), transparent 60%),
+        radial-gradient(900px 600px at 40% 120%, rgba(251,113,133,.20), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+
+    .wrap{
+      width: min(560px, 100%);
+      position: relative;
+    }
+
+    .glow{
+      position:absolute;
+      inset: -40px -20px auto -20px;
+      height: 140px;
+      background: linear-gradient(90deg, rgba(139,92,246,.35), rgba(34,211,238,.25), rgba(251,113,133,.25), rgba(251,191,36,.20));
+      filter: blur(26px);
+      opacity: .95;
+      pointer-events:none;
+      border-radius: 999px;
+    }
+
+    .card{
+      position: relative;
+      background: linear-gradient(180deg, var(--glass), rgba(255,255,255,.04));
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(900px 280px at 15% 0%, rgba(139,92,246,.18), transparent 60%),
+        radial-gradient(700px 260px at 95% 20%, rgba(34,211,238,.12), transparent 60%);
+      pointer-events:none;
+    }
+
+    .header{
+      padding: 18px 18px 10px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      gap: 12px;
+    }
+
+    .mark{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(139,92,246,.85), rgba(34,211,238,.70), rgba(251,113,133,.70));
+      box-shadow: 0 10px 30px rgba(139,92,246,.20);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border: 1px solid rgba(255,255,255,.14);
+      flex: 0 0 auto;
+      position: relative;
+      overflow:hidden;
+    }
+    .mark::after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.35), transparent 55%);
+      transform: rotate(15deg);
+    }
+    .mark span{
+      font-weight: 900;
+      letter-spacing: .3px;
+      color: rgba(10,10,18,.92);
+      position: relative;
+      z-index: 1;
+    }
+
+    .title{
+      line-height: 1.1;
+    }
+    .title h1{
+      margin:0;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .title p{
+      margin: 6px 0 0 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .content{
+      padding: 16px 18px 18px 18px;
+      position: relative;
+    }
+
+    .label{
+      font-size: 12px;
+      color: var(--muted2);
+      margin: 0 0 8px 2px;
+      letter-spacing: .2px;
+    }
+
+    .field{
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: var(--radius2);
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .10s ease;
+    }
+    .field::placeholder{ color: rgba(255,255,255,.40); }
+    .field:focus{
+      border-color: rgba(34,211,238,.35);
+      box-shadow: 0 0 0 4px rgba(34,211,238,.10);
+    }
+
+    .row{
+      display:flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.10);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: .2px;
+      transition: transform .10s ease, filter .15s ease, opacity .15s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary{
+      background: linear-gradient(90deg, var(--gradA), var(--gradB), var(--gradC), var(--gradD));
+      color: var(--btnText);
+      box-shadow: 0 10px 26px rgba(0,0,0,.30);
+    }
+    .btn-primary:hover{ filter: brightness(1.05); }
+
+    .btn-secondary{
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid var(--stroke);
+    }
+
+    .status{
+      margin-top: 12px;
+      padding: 12px 12px;
+      border-radius: var(--radius2);
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.14);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: pre-wrap;
+      min-height: 44px;
+      display:flex;
+      align-items:center;
+    }
+
+    .status.ok{ color: rgba(34,197,94,.92); border-color: rgba(34,197,94,.25); background: rgba(34,197,94,.07); }
+    .status.warn{ color: rgba(251,191,36,.92); border-color: rgba(251,191,36,.25); background: rgba(251,191,36,.07); }
+    .status.err{ color: rgba(251,113,133,.92); border-color: rgba(251,113,133,.25); background: rgba(251,113,133,.07); }
+
+    .footer{
+      padding: 12px 18px 16px 18px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: rgba(255,255,255,.46);
+      font-size: 12px;
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+
+    /* Block screen */
+    .block{
+      padding: 18px;
+      text-align: center;
+    }
+    .block h2{
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .block p{
+      margin: 0 0 14px 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      * { transition: none !important; }
+    }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h2>Instagram Downloader</h2>
-    <div class="muted">Paste a public Instagram post link. The bot will send your files in chat.</div>
+  <div class="wrap">
+    <div class="glow"></div>
 
-    <input id="link" placeholder="https://www.instagram.com/p/..." />
-    <button id="submit">Download</button>
+    <div class="card" id="card">
+      <div class="header">
+        <div class="mark"><span>IG</span></div>
+        <div class="title">
+          <h1>Instagram Downloader</h1>
+          <p>Paste a post link. The bot sends your files in chat.</p>
+        </div>
+      </div>
 
-    <div id="status" class="status"></div>
+      <div class="content" id="content">
+        <div class="label">Instagram link</div>
+        <input class="field" id="link" placeholder="https://www.instagram.com/p/..." inputmode="url" autocomplete="off" />
+
+        <div class="row">
+          <button class="btn btn-primary" id="submit">Download</button>
+        </div>
+
+        <div class="status" id="status">Ready.</div>
+      </div>
+
+      <div class="footer">
+        <div class="pill" id="envPill">Checking environment...</div>
+        <div class="pill">Mini App</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    // Configure these two (so the browser block screen can point people correctly)
+    const BOT_USERNAME = "@quick_instagram_bot";               // TODO: change
+    const UPDATES_CHANNEL_URL = "https://t.me/quickgram_downloader"; // TODO: change if you want to link the channel here too
+
+    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+
+    const card = document.getElementById("card");
+    const content = document.getElementById("content");
+    const envPill = document.getElementById("envPill");
 
     const linkInput = document.getElementById("link");
     const statusEl = document.getElementById("status");
     const btn = document.getElementById("submit");
 
-    btn.onclick = async () => {
-      const link = linkInput.value.trim();
-      statusEl.textContent = "";
+    function setStatus(text, kind){
+      statusEl.className = "status" + (kind ? " " + kind : "");
+      statusEl.textContent = text;
+    }
 
-      if (!link || !link.includes("instagram.com/")) {
-        statusEl.textContent = "Please paste a valid Instagram link.";
-        return;
+    function showBlocked(){
+      envPill.textContent = "Browser mode (blocked)";
+      content.innerHTML = `
+        <div class="block">
+          <h2>Open in Telegram</h2>
+          <p>This page is a Telegram Mini App. Please open it from inside Telegram using the bot’s menu button.</p>
+          <button class="btn btn-primary" id="openTg">Open Bot in Telegram</button>
+          <div style="height:10px"></div>
+          <a href="${UPDATES_CHANNEL_URL}" style="color: rgba(255,255,255,.72); text-decoration: none; font-size: 13px;">Updates Channel</a>
+        </div>
+      `;
+      document.getElementById("openTg").onclick = () => {
+        // t.me link opens Telegram if installed
+        window.location.href = `https://t.me/${BOT_USERNAME.replace("@","")}`;
+      };
+    }
+
+    function applyTelegramTheme(){
+      try{
+        if (!tg) return;
+        tg.expand();
+
+        // Prefer Telegram theme colors when available
+        const p = tg.themeParams || {};
+        if (p && (p.bg_color || p.text_color)) {
+          envPill.textContent = "Telegram WebApp";
+        } else {
+          envPill.textContent = "Telegram WebApp (theme)";
+        }
+      } catch (e){
+        // no-op
       }
+    }
 
-      btn.disabled = true;
-      statusEl.textContent = "Submitting...";
+    // Gate: if not in Telegram, block
+    const inTelegram = !!(tg && typeof tg.initData === "string" && tg.initData.length > 0);
+    if (!inTelegram){
+      showBlocked();
+    } else {
+      envPill.textContent = "Telegram WebApp";
+      applyTelegramTheme();
 
-      try {
-        const res = await fetch("/api/submit", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            link,
-            initData: tg.initData
-          })
-        });
+      btn.onclick = async () => {
+        const link = linkInput.value.trim();
+        if (!link || !link.includes("instagram.com/")) {
+          setStatus("Please paste a valid Instagram link.", "warn");
+          return;
+        }
 
-        const data = await res.json();
+        btn.disabled = true;
+        btn.style.opacity = "0.75";
+        setStatus("Submitting...", "");
 
-if (!res.ok) {
-  // Join gate response
-  if (data && data.join_required) {
-    statusEl.textContent = data.error;
-    btn.disabled = false;
-    return;
-  }
+        try {
+          const res = await fetch("/api/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ link, initData: tg.initData })
+          });
 
-  // Any other error
-  throw new Error((data && data.error) || "Request failed");
-}
+          const data = await res.json().catch(() => ({}));
 
-        statusEl.textContent = "Submitted. Check the bot chat for your files.";
-      } catch (e) {
-        statusEl.textContent = "Error: " + (e.message || String(e));
-      } finally {
-        btn.disabled = false;
-      }
-    };
+          if (!res.ok) {
+            // Join gate
+            if (data && data.join_required) {
+              setStatus(data.error || "Please join the updates channel first, then try again.", "warn");
+              return;
+            }
+            throw new Error((data && data.error) || "Request failed");
+          }
+
+          setStatus("Submitted. Check the bot chat for your files.", "ok");
+        } catch (e) {
+          setStatus("Error: " + (e.message || String(e)), "err");
+        } finally {
+          btn.disabled = false;
+          btn.style.opacity = "1";
+        }
+      };
+    }
   </script>
 </body>
 </html>
