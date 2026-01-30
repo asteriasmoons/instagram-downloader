@@ -142,7 +142,6 @@ def post_or_reel_link_handler(message):
     guide_msg_1 = None
 
     try:
-        log(f"{bot_username} log:\n\nuser:\n{message.chat.id}\n\n✅ message text:\n{message.text}")
         guide_msg_1 = bot.send_message(message.chat.id, "Ok wait a few moments...")
 
         post_shortcode = get_post_or_reel_shortcode_from_link(message.text)
