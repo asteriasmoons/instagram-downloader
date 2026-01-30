@@ -167,5 +167,10 @@ def process_link(chat_id: int, link: str):
     for i in range(0, len(media), 10):
         bot.send_media_group(chat_id, media[i:i+10])
 
-    bot.send_message(chat_id, end_msg, parse_mode="HTML")
+    bot.send_message(
+    chat_id,
+    end_msg,
+    parse_mode="HTML",
+    disable_web_page_preview=True
+)
     try_to_delete_message(chat_id, guide.message_id)
