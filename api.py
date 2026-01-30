@@ -7,7 +7,12 @@ import time
 from flask import Blueprint, request, jsonify, send_from_directory
 from telebot import types
 
-from variables import bot, BOT_TOKEN
+import os
+from variables import bot
+
+BOT_TOKEN = (os.getenv("BEST_INSTAGRAM_DOWNLOADER_BOT_API") or "").strip()
+if not BOT_TOKEN:
+    raise RuntimeError("Missing BEST_INSTAGRAM_DOWNLOADER_BOT_API env var")
 from functions import (
     get_post_or_reel_shortcode_from_link,
     try_to_delete_message,
