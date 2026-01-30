@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Instagram Downloader</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 16px; }
+    .card { border: 1px solid rgba(0,0,0,0.12); border-radius: 14px; padding: 16px; }
+    h2 { margin: 0 0 8px 0; }
+    .muted { opacity: 0.75; font-size: 14px; margin-bottom: 12px; }
+    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.2); font-size: 16px; }
+    button { width: 100%; padding: 12px; border-radius: 12px; border: 0; font-size: 16px; margin-top: 12px; }
+    .status { margin-top: 12px; white-space: pre-wrap; font-size: 14px; opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Instagram Downloader</h2>
+    <div class="muted">Paste a public Instagram post link. The bot will send your files in chat.</div>
+
+    <input id="link" placeholder="https://www.instagram.com/p/..." />
+    <button id="submit">Download</button>
+
+    <div id="status" class="status"></div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    const linkInput = document.getElementById("link");
+    const statusEl = document.getElementById("status");
+    const btn = document.getElementById("submit");
+
+    btn.onclick = async () => {
+      const link = linkInput.value.trim();
+      statusEl.textContent = "";
+
+      if (!link || !link.includes("instagram.com/")) {
+        statusEl.textContent = "Please paste a valid Instagram link.";
+        return;
+      }
+
+      btn.disabled = true;
+      statusEl.textContent = "Submitting...";
+
+      try {
+        const res = await fetch("/api/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            link,
+            initData: tg.initData
+          })
+        });
+
+        const data = await res.json();
+
+if (!res.ok) {
+  // Join gate response
+  if (data && data.join_required) {
+    statusEl.textContent = data.error;
+    btn.disabled = false;
+    return;
+  }
+
+  // Any other error
+  throw new Error((data && data.error) || "Request failed");
+}
+
+        statusEl.textContent = "Submitted. Check the bot chat for your files.";
+      } catch (e) {
+        statusEl.textContent = "Error: " + (e.message || String(e));
+      } finally {
+        btn.disabled = false;
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,16 +1,64 @@
 import os
 import json
-from flask import Flask, request, abort
+import hmac
+import hashlib
+import urllib.parse
+from api import api
+from flask import Flask, request, send_from_directory, jsonify
 
 from variables import bot  # uses your existing bot instance from variables.py
 
 import best_instagram_downloader  # ensures all @bot.message_handler decorators run
 
 app = Flask(__name__)
+app.register_blueprint(api)
 
 BOT_TOKEN = (os.getenv("BEST_INSTAGRAM_DOWNLOADER_BOT_API") or "").strip()
 if not BOT_TOKEN:
     raise RuntimeError("Missing BEST_INSTAGRAM_DOWNLOADER_BOT_API env var")
+    
+def _tg_webapp_secret_key(bot_token: str) -> bytes:
+    # Telegram WebApp signature key derivation
+    return hmac.new(b"WebAppData", bot_token.encode("utf-8"), hashlib.sha256).digest()
+
+def verify_telegram_webapp_init_data(init_data: str, bot_token: str, max_age_seconds: int = 3600) -> dict:
+    """
+    Verifies Telegram Mini App initData and returns parsed fields.
+    Raises ValueError if invalid.
+    """
+    if not init_data:
+        raise ValueError("Missing initData")
+
+    parsed = dict(urllib.parse.parse_qsl(init_data, keep_blank_values=True))
+    received_hash = parsed.pop("hash", None)
+    if not received_hash:
+        raise ValueError("Missing hash")
+
+    # Optional freshness check
+    auth_date = int(parsed.get("auth_date", "0") or "0")
+    if auth_date:
+        now = int(__import__("time").time())
+        if now - auth_date > max_age_seconds:
+            raise ValueError("initData is too old")
+
+    data_check_string = "\n".join(f"{k}={parsed[k]}" for k in sorted(parsed.keys()))
+
+    secret_key = _tg_webapp_secret_key(bot_token)
+    computed_hash = hmac.new(secret_key, data_check_string.encode("utf-8"), hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(computed_hash, received_hash):
+        raise ValueError("Invalid initData signature")
+
+    return parsed
+
+def extract_user_id_from_init_data_fields(fields: dict) -> int:
+    user_raw = fields.get("user")
+    if not user_raw:
+        raise ValueError("No user in initData")
+
+    user_obj = json.loads(user_raw)
+    user_id = int(user_obj.get("id"))
+    return user_id 
 
 WEBHOOK_SECRET = (os.getenv("WEBHOOK_SECRET") or "").strip()  # optional but recommended
 PUBLIC_URL = (os.getenv("PUBLIC_URL") or "").strip()          # Render service URL (https://....onrender.com)
